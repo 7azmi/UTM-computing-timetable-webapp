@@ -110,7 +110,7 @@ class SubjectManager {
     async fetchAllStudents(adminSessionId, sesi, semester) {
         let students = [];
         let offset = 0;
-        const limit = 100;
+        const limit = 1000;
         let moreData = true;
         const maxIterations = 70; // Maximum number of iterations to prevent infinite loops
         let iterations = 0;
@@ -122,10 +122,15 @@ class SubjectManager {
                 const response = await fetch(url);
                 const data = await response.json();
                 console.log(`Fetched ${data.length} students`);
-                if (data.length > 1) { // Last student might get missing. It won't happen mostly (1% chance). So, I'm not gonna fix it.
+                
+                // Check if the result is empty or just an empty sample result
+                if (data.length > 1 || (data.length === 1 && data[0] && Object.keys(data[0]).length > 0)) {
                     students = students.concat(data);
                     offset += limit;
                     iterations++;
+                    if (data.length < limit) {
+                        moreData = false;
+                    }
                 } else {
                     moreData = false;
                 }
@@ -141,4 +146,5 @@ class SubjectManager {
 
         return students;
     }
+
 }

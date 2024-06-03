@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
-<title>TTMS Mobile</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3pro.css">
-<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-
+<head>
+    <title>TTMS Mobile</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3pro.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
 <body style="max-width:600px">
 
     <nav class="w3-sidebar w3-bar-block w3-card" id="mySidebar">
@@ -17,6 +18,7 @@
         <a class="w3-bar-item w3-button" href="javascript: profile();">My Profile</a>
         <a class="w3-bar-item w3-button" href="javascript: course();">Courses</a>
         <a class="w3-bar-item w3-button" href="javascript: timetable();">Timetable</a>
+        <a class="w3-bar-item w3-button" href="javascript: compareTimetables();">Compare Timetables</a>
         <a class="w3-bar-item w3-button" href="javascript: logout();">Logout</a>
     </nav>
 
@@ -31,54 +33,61 @@
     <footer class="w3-container w3-theme w3-margin-top w3-blue w3-center">
         <h5>Copyright 2024, Faculty of Computing, UTM</h5>
     </footer>
-</body>
 
-<script src="TTMS_Lib.js"></script>
-<script>
-    closeSidebar();
-    function openSidebar() {
-        document.getElementById("mySidebar").style.display = "block";
-    }
-
-    function closeSidebar() {
-        document.getElementById("mySidebar").style.display = "none";
-    }
-
-    console.log(sessionStorage.getItem("web_fc_utm_my_ttms"));
-
-    // logout and back to login page if session invalid or 
-    // session time out
-    checkSession();
-
-    // only reach here after pass both the checkSession() and 
-    // checkTimeOut() functions
-    console.log('Load profile page');
-    $('#main-container').load('profile.html');
-
-    function logout() {
-        sessionStorage.removeItem("web_fc_utm_my_ttms");
+    <script src="TTMS_Lib.js"></script>
+    <script>
         closeSidebar();
-        window.location.href = "login.html";
-    }
+        function openSidebar() {
+            document.getElementById("mySidebar").style.display = "block";
+        }
 
-    // All load page functions below require CORS disabled.
-    // Press Win + r keys and run the followings:
-    // chrome.exe --user-data-dir="C:/Chrome dev session" --disable-web-security
-    function profile() {
-        closeSidebar();
+        function closeSidebar() {
+            document.getElementById("mySidebar").style.display = "none";
+        }
+
+        console.log(sessionStorage.getItem("web_fc_utm_my_ttms"));
+
+        // logout and back to login page if session invalid or 
+        // session time out
+        checkSession();
+
+        // only reach here after pass both the checkSession() and 
+        // checkTimeOut() functions
         console.log('Load profile page');
         $('#main-container').load('profile.html');
-    }
 
-    function course() {
-        closeSidebar();
-        console.log('Load course page');
-        $('#main-container').load('course.html');
-    }
+        function logout() {
+            sessionStorage.removeItem("web_fc_utm_my_ttms");
+            closeSidebar();
+            window.location.href = "login.html";
+        }
 
-    function timetable() {
-        closeSidebar();
-        console.log('Load timetable page');
-        $('#main-container').load('timetable.html');
-    }
-</script>
+        // All load page functions below require CORS disabled.
+        // Press Win + r keys and run the followings:
+        // chrome.exe --user-data-dir="C:/Chrome dev session" --disable-web-security
+        function profile() {
+            closeSidebar();
+            console.log('Load profile page');
+            $('#main-container').load('profile.html');
+        }
+
+        function course() {
+            closeSidebar();
+            console.log('Load course page');
+            $('#main-container').load('course.html');
+        }
+
+        function timetable() {
+            closeSidebar();
+            console.log('Load timetable page');
+            $('#main-container').load('timetable.html');
+        }
+
+        function compareTimetables() {
+            closeSidebar();
+            console.log('Load compare timetables page');
+            $('#main-container').load('timetable_compare.html');
+        }
+    </script>
+</body>
+</html>

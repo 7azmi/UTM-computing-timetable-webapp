@@ -9,7 +9,6 @@
 <body class="w3-theme-l5" style="max-width:600px">
     <div class="w3-container w3-theme">
         <h2>Weekly Timetable</h2>
-        <!-- Input field and button for updating the timetable -->
         <div style="margin-bottom: 20px;">
             <input type="text" id="userInput" placeholder="" class="w3-input w3-border" style="width: auto; display: inline-block; margin-right: 10px;">
             <button onclick="updateTimetable()" class="w3-button w3-blue">Check</button>
@@ -21,7 +20,6 @@
 <script src="SubjectManager.js"></script>
 <script src="TTMS_Lib.js"></script>
 <script>
-
     $(document).ready(function() {
         if (checkSession()) { 
             initializeTimetable();
@@ -30,17 +28,20 @@
 
     async function initializeTimetable() {
         const appStorage = JSON.parse(sessionStorage.getItem("web_fc_utm_my_ttms"));
-        const subjectManager = new SubjectManager();
-        const user_id = appStorage.user_auth.description === "Pensyarah" ? appStorage.user_auth.no_pekerja : appStorage.user_auth.login_name;
-        console.log(user_id);
-        // Set the placeholder for the input field
-        $('#userInput').attr('placeholder', 'Enter User ID (e.g., ' + user_id + ')');
-        await fetchAndDisplayTimetable(user_id);
+        const userId = appStorage.user_auth.description === "Pensyarah" ? appStorage.user_auth.no_pekerja : appStorage.user_auth.login_name;
+        $('#userInput').attr('placeholder', 'Enter User ID (e.g., ' + userId + ')');
+        await fetchAndDisplayTimetable(userId);
     }
 
     async function fetchAndDisplayTimetable(userId) {
         const subjectManager = new SubjectManager();
-        const latestSemesterSubjects = await subjectManager.fetchLatestSemesterSubjects(userId);
+        let latestSemesterSubjects = [];
+
+        if (isLecturerId(userId)) {
+            latestSemesterSubjects = await subjectManager.fetchLatestSemesterLecturerSubjects(userId);
+        } else {
+            latestSemesterSubjects = await subjectManager.fetchLatestSemesterStudentSubjects(userId);
+        }
 
         let timetableHtml = '<table class="w3-table-all w3-centered w3-card">';
         timetableHtml += '<tr class="w3-theme-d2"><th>Time / Day</th><th>Sunday</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th></tr>';
@@ -80,6 +81,10 @@
             return false;
         }
         return true;
+    }
+
+    function isLecturerId(id) {
+        return /^\d+$/.test(id);
     }
 </script>
 </html>
