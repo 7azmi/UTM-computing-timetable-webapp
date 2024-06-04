@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Compare Timetables</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
+    <style>
+        .clash {
+            background-color: red;
+            color: white;
+        }
+        .party1 {
+            background-color: lightblue;
+        }
+        .party2 {
+            background-color: lightgreen;
+        }
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .search-results {
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            width: 100%;
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .result-item {
+            cursor: pointer;
+            padding: 5px;
+        }
+        .result-item:hover {
+            background-color: #ddd;
+        }
+        .details-container {
+            margin-top: 20px;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="w3-theme-l5" style="max-width:600px">
+    <div class="w3-container w3-theme">
+        <h2>Compare Timetables</h2>
+    </div>
+    <div class="search-container">
+        <label class="user-label" for="searchInput1">User 1:</label>
+        <input type="text" id="searchInput1" class="w3-input w3-border" style="width: auto; display: inline-block; margin-right: 10px;">
+        <div id="searchResults1" class="search-results w3-container w3-light-grey"></div>
+        <div id="loadingSpinner1" class="loading-spinner" style="display:none;"></div>
+    </div>
+    <div class="search-container">
+        <label class="user-label" for="searchInput2">User 2:</label>
+        <input type="text" id="searchInput2" class="w3-input w3-border" style="width: auto; display: inline-block; margin-right: 10px;">
+        <div id="searchResults2" class="search-results w3-container w3-light-grey"></div>
+        <div id="loadingSpinner2" class="loading-spinner" style="display:none;"></div>
+    </div>
+    <div id="timetable-container" class="w3-container"></div>
+    <div class="details-container w3-container">
+        <h3>User Details:</h3>
+        <p id="user1Details" class="party1">User 1: ???</p>
+        <p id="user2Details" class="party2">User 2: ???</p>
+        <h3>Match Details:</h3>
+        <p id="clashSummary">Matches: ???</p>
+        <p id="detailsSummary">Details: ???</p>
+    </div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="SubjectManager.js"></script>
+<script src="TTMS_Lib.js"></script>
+<script>
+    let allUsers = [];
+    let user1Timetable = {};
+    let user2Timetable = {};
+    let user1 = {};
+    let user2 = {};
+
+    $(document).ready(function() {
+        cacheAllUsers();
+        $('#searchInput1').on('input', () => filterSearchResults(1));
+        $('#searchInput2').on('input', () => filterSearchResults(2));
+        initializeUser1();
+    });
+
+    async function cacheAllUsers() {
+        const subjectManager = new SubjectManager();
+        const appStorage = JSON.parse(sessionStorage.getItem("web_fc_utm_my_ttms"));
+        const userSessionId = appStorage.user_auth.session_id;
+        const adminSessionId = await subjectManager.fetchAdminSessionId(userSessionId);
+        const sesi = "2023/2024"; // Replace with the current session
+        const semester = 2; // Replace with the current semester
+
+        const [students, lecturers] = await Promise.all([
+            subjectManager.fetchAllStudents(adminSessionId, sesi, semester),
+            subjectManager.fetchAllLecturers(adminSessionId, sesi, semester)
+        ]);
+
+        allUsers = [...lecturers, ...students]; // Prioritize lecturers
+    }
+
+    function initializeUser1() {
+        const appStorage = JSON.parse(sessionStorage.getItem("web_fc_utm_my_ttms"));
+        const user = appStorage.user_auth;
+        $('#searchInput1').val(user.nama);
+        selectUser(user.nama, 1);
+    }
+
+    function filterSearchResults(fieldNumber) {
+        const searchTerm = $(`#searchInput${fieldNumber}`).val().toLowerCase();
+        const results = allUsers.filter(user => user.nama.toLowerCase().includes(searchTerm));
+
+        displaySearchResults(results, fieldNumber);
+    }
+
+    function displaySearchResults(results, fieldNumber) {
+        let resultsHtml = '<ul class="w3-ul">';
+        results.forEach(user => {
+            const userId = user.no_matrik || user.no_pekerja;
+            const userType = user.no_matrik ? "Student" : "Lecturer";
+            resultsHtml += `<li class="result-item" onclick="selectUser('${user.nama}', ${fieldNumber})">${user.nama} (${userType})</li>`;
+        });
+        resultsHtml += '</ul>';
+
+        $(`#searchResults${fieldNumber}`).html(resultsHtml).show();
+    }
+
+    async function selectUser(userName, fieldNumber) {
+        $(`#loadingSpinner${fieldNumber}`).show();
+        const selectedUser = allUsers.find(user => user.nama === userName);
+        if (selectedUser) {
+            const userId = selectedUser.no_matrik || selectedUser.no_pekerja;
+            if (fieldNumber === 1) {
+                user1 = selectedUser;
+                $(`#searchInput${fieldNumber}`).val(user1.nama);
+                user1Timetable = await fetchUserTimetable(userId, user1.no_matrik ? 'student' : 'lecturer');
+                displayUserDetails(1, user1);
+            } else {
+                user2 = selectedUser;
+                $(`#searchInput${fieldNumber}`).val(user2.nama);
+                user2Timetable = await fetchUserTimetable(userId, user2.no_matrik ? 'student' : 'lecturer');
+                displayUserDetails(2, user2);
+            }
+            displayTimetable(user1Timetable, user2Timetable);
+            const clashes = compareTimetables(user1Timetable, user2Timetable);
+            displaySummary(clashes);
+        }
+        $(`#loadingSpinner${fieldNumber}`).hide();
+        $(`#searchResults${fieldNumber}`).hide();
+    }
+
+    async function fetchUserTimetable(userId, userType) {
+        const subjectManager = new SubjectManager();
+        let subjects;
+        if (userType === 'student') {
+            subjects = await subjectManager.fetchLatestSemesterStudentSubjects(userId);
+        } else {
+            subjects = await subjectManager.fetchLatestSemesterLecturerSubjects(userId);
+        }
+        const timetable = {};
+        for (const subject of subjects) {
+            const timetableEntries = await subjectManager.fetchSubjectTimetable(subject.kod_subjek, subject.sesi, subject.semester, subject.seksyen);
+            timetableEntries.forEach(entry => {
+                const key = `${entry.hari}-${entry.masa}`;
+                timetable[key] = subject;
+            });
+        }
+        return timetable;
+    }
+
+    function displayTimetable(timetable1, timetable2) {
+        let timetableHtml = '<table class="w3-table-all w3-centered w3-card">';
+        timetableHtml += '<tr class="w3-theme-d2"><th>Time / Day</th><th>Sunday</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th></tr>';
+
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
+        const timeSlots = { 2: '8 AM', 3: '9 AM', 4: '10 AM', 5: '11 AM', 6: '12 PM', 7: 'Lunch break', 8: '2 PM', 9: '3 PM', 10: '4 PM', 11: '5 PM' };
+
+        Object.keys(timeSlots).forEach(hour => {
+            timetableHtml += `<tr><td>${timeSlots[hour]}</td>`;
+            days.forEach((_, index) => {
+                const key = `${index + 1}-${hour}`;
+                const cellData1 = timetable1[key] ? `<div class="party1">${timetable1[key].kod_subjek} (${timetable1[key].seksyen})</div>` : '';
+                const cellData2 = timetable2[key] ? `<div class="party2">${timetable2[key].kod_subjek} (${timetable2[key].seksyen})</div>` : '';
+                const clashClass = cellData1 && cellData2 ? 'clash' : '';
+                timetableHtml += `<td id="timetable-${key}" class="${clashClass}">${cellData1}${cellData2}</td>`;
+            });
+            timetableHtml += '</tr>';
+        });
+        timetableHtml += '</table>';
+
+        document.getElementById('timetable-container').innerHTML = timetableHtml;
+    }
+
+    function compareTimetables(timetable1, timetable2) {
+        const clashes = [];
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
+        const timeSlots = { 2: '8 AM', 3: '9 AM', 4: '10 AM', 5: '11 AM', 6: '12 PM', 7: 'Lunch break', 8: '2 PM', 9: '3 PM', 10: '4 PM', 11: '5 PM' };
+
+        Object.keys(timetable1).forEach(key => {
+            if (timetable2[key]) {
+                clashes.push({
+                    day: days[key.split('-')[0] - 1],
+                    time: timeSlots[key.split('-')[1]],
+                    timetable1: timetable1[key],
+                    timetable2: timetable2[key]
+                });
+                document.getElementById(`timetable-${key}`).classList.add('clash');
+            }
+        });
+        return clashes;
+    }
+
+    function displayUserDetails(userNumber, user) {
+        const userDetails = `User ${userNumber}: ${user.nama} (${user.no_matrik || user.no_pekerja})`;
+        document.getElementById(`user${userNumber}Details`).innerText = userDetails;
+    }
+
+    function displaySummary(clashes) {
+        const clashCount = clashes.length;
+        const clashDetails = clashes.map(clash => `Day: ${clash.day}, Time: ${clash.time}, <span class="party1">${clash.timetable1.kod_subjek} (${clash.timetable1.seksyen})</span> and <span class="party2">${clash.timetable2.kod_subjek} (${clash.timetable2.seksyen})</span>`).join('<br>');
+
+        document.getElementById('clashSummary').innerText = `Matches: ${clashCount}`;
+        document.getElementById('detailsSummary').innerHTML = `Details:<br>${clashDetails}`;
+    }
+</script>
+</html>
