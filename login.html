@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -33,7 +34,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="TTMS_Lib.js"></script>
 <script>
-
     var ajaxURL = "http://web.fc.utm.my/ttms/web_man_webservice_json.cgi?";
 
     // jump to home page if user already authenticated
@@ -44,13 +44,10 @@
     console.log(getEpoch());
     console.log("Hi Anas");
 
-    // Start function definition & implementation
     function login() {
-
         var username = $('#username').val();
-        var passwd = $('#passwd').val();;
+        var passwd = $('#passwd').val();
         var myAuth = { 'entity': 'authentication', 'login': username, 'password': passwd };
-
         var authGetData = new URLSearchParams(myAuth).toString();
 
         console.log(authGetData);
@@ -60,8 +57,18 @@
             url: ajaxURL,
             data: authGetData,
             success: function (response, status, xhr) {
-                var auth = JSON.parse(response);
-                if (auth.length > 0) {
+                console.log("AJAX call succeeded. Response: ", response);
+
+                var auth;
+                try {
+                    auth = JSON.parse(response);
+                } catch (e) {
+                    console.log("Failed to parse JSON response. Error: ", e);
+                    alert("Unexpected server response. Please try again.");
+                    return;
+                }
+
+                if (auth && auth.length > 0) {
                     var appStorage = {
                         user_auth: auth[0],
                         epoch_last: getEpoch(),
@@ -69,13 +76,14 @@
                     };
 
                     sessionStorage.setItem("web_fc_utm_my_ttms", JSON.stringify(appStorage));
-                    // console.log("web_fc_utm_my_ttms session item: "+sessionStorage.getItem("web_fc_utm_my_ttms"))
                     window.location.href = "home.html";
                 } else {
-                    alert("Incorrect username or password. Please try again."); // TODO this line doesn't work
+                    console.log("Authentication failed. Response data: ", auth);
+                    alert("Incorrect username or password. Please try again.");
                 }
             },
             error: function (xhr, status, error) {
+                console.log("AJAX call failed. Status: ", status, " Error: ", error);
                 if (xhr.status === 0) {
                     alert("Cannot connect to server. Please check your network connection.");
                 } else if (xhr.status === 401) {
@@ -86,8 +94,5 @@
             },
             async: true,
         });
-
-
-
     }
 </script>
