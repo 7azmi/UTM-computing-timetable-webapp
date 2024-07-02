@@ -9,7 +9,7 @@
 
 <body style="max-width:600px">
     <div class="w3-container w3-theme">
-        <h2>Subjects of Last Semester</h2>
+        <h2 id="pageTitle">Subjects of Last Semester</h2>
     </div>
     <div class="w3-container">
         <table class="w3-table w3-bordered" id="subjectsTable">
@@ -19,7 +19,6 @@
                     <th>Course Code</th>
                     <th>Subject Name</th>
                     <th>Section</th>
-                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -63,13 +62,18 @@
             subjectsTable.innerHTML = '';
 
             if (semesters.length > 0) {
+                // Update the title with the current year and semester
+                var currentSemester = semesters[currentSemesterIndex][0];
+                var pageTitle = `Subjects of Semester ${currentSemester.semester}, Session ${currentSemester.sesi}`;
+                document.getElementById('pageTitle').innerText = pageTitle;
+
                 semesters[currentSemesterIndex].forEach(subject => {
                     var row = subjectsTable.insertRow();
                     row.insertCell(0).innerText = subject.kod_subjek;
                     row.insertCell(1).innerText = subject.kod_kursus;
                     row.insertCell(2).innerText = subject.nama_subjek;
                     row.insertCell(3).innerText = subject.seksyen;
-                    row.insertCell(4).innerText = subject.status;
+                    //row.insertCell(4).innerText = subject.status;
                 });
             } else {
                 var row = subjectsTable.insertRow();
@@ -100,6 +104,7 @@
             let appStorage = JSON.parse(sessionStorage.getItem("web_fc_utm_my_ttms"));
             let userId = appStorage.user_auth.id;
             if(isStudent()) userId = appStorage.user_auth.login_name
+
 
             if (isStudent()) {
                 console.log("Fetching student subjects...");
