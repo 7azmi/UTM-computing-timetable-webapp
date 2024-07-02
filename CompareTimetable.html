@@ -53,6 +53,19 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
     </style>
 </head>
 <body class="w3-theme-l5" style="max-width:600px">
@@ -80,6 +93,9 @@
         <p id="clashSummary">Matches: ???</p>
         <p id="detailsSummary">Details: ???</p>
     </div>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="SubjectManager.js"></script>
@@ -99,12 +115,13 @@
     });
 
     async function cacheAllUsers() {
+        $('#loadingOverlay').show(); // Show loading spinner
         const subjectManager = new SubjectManager();
         const appStorage = JSON.parse(sessionStorage.getItem("web_fc_utm_my_ttms"));
         const userSessionId = appStorage.user_auth.session_id;
         const adminSessionId = await subjectManager.fetchAdminSessionId(userSessionId);
-        const sesi = "2023/2024"; // Replace with the current session
-        const semester = 2; // Replace with the current semester
+        const sesi = "2023/2024"; // TODO: Replace with the current year dynamically
+        const semester = 2; // Replace with the current semester dynamically
 
         const [students, lecturers] = await Promise.all([
             subjectManager.fetchAllStudents(adminSessionId, sesi, semester),
@@ -112,6 +129,7 @@
         ]);
 
         allUsers = [...lecturers, ...students]; // Prioritize lecturers
+        $('#loadingOverlay').hide(); // Hide loading spinner
     }
 
     function initializeUser1() {
