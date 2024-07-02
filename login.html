@@ -47,6 +47,13 @@
     function login() {
         var username = $('#username').val();
         var passwd = $('#passwd').val();
+
+        // Check if username or password fields are empty
+        if (!username || !passwd) {
+            alert("Please fill in both username and password.");
+            return; // Prevent the function from proceeding
+        }
+
         var myAuth = { 'entity': 'authentication', 'login': username, 'password': passwd };
         var authGetData = new URLSearchParams(myAuth).toString();
 
