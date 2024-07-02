@@ -33,334 +33,14 @@
     </div>
 
     <script src="TTMS_Lib.js"></script>
+    <script src="SubjectManager.js"></script>
     <script>
-        // Dummy data array
-        var subjectsData = [
-  {
-    "semester": 2,
-    "tahun_kursus": 2,
-    "sesi": "2023/2024",
-    "status": "-",
-    "kod_subjek": "SECI1143",
-    "seksyen": 9,
-    "kod_kursus": "SECJH",
-    "nama_subjek": "Probability & Statistical Data Analysis"
-  },
-  {
-    "semester": 2,
-    "kod_kursus": "SECJH",
-    "nama_subjek": "XTRA-CURRICULAR EXPERIENTIAL LEARNING (ExCEL)",
-    "status": "-",
-    "seksyen": 17,
-    "kod_subjek": "UKQT3001",
-    "sesi": "2023/2024",
-    "tahun_kursus": 2
-  },
-  {
-    "semester": 2,
-    "sesi": "2023/2024",
-    "tahun_kursus": 2,
-    "kod_kursus": "SECJH",
-    "nama_subjek": "Introduction to Entrepreneurship",
-    "seksyen": 6,
-    "kod_subjek": "UBSS1032",
-    "status": "-"
-  },
-  {
-    "nama_subjek": "Mobile Application Programming",
-    "kod_kursus": "SECJH",
-    "kod_subjek": "SECJ3623",
-    "seksyen": 1,
-    "status": "-",
-    "sesi": "2023/2024",
-    "tahun_kursus": 2,
-    "semester": 2
-  },
-  {
-    "semester": 2,
-    "sesi": "2023/2024",
-    "tahun_kursus": 2,
-    "kod_kursus": "SECJH",
-    "nama_subjek": "Computational Intelligence",
-    "seksyen": 5,
-    "kod_subjek": "SECJ3563",
-    "status": "-"
-  },
-  {
-    "semester": 2,
-    "kod_kursus": "SECJH",
-    "nama_subjek": "Software Quality Assurance",
-    "kod_subjek": "SECJ3343",
-    "seksyen": 4,
-    "status": "-",
-    "sesi": "2023/2024",
-    "tahun_kursus": 2
-  },
-  {
-    "semester": 2,
-    "status": "-",
-    "kod_subjek": "SECJ3104",
-    "seksyen": 1,
-    "nama_subjek": "Applications Development",
-    "kod_kursus": "SECJH",
-    "tahun_kursus": 2,
-    "sesi": "2023/2024"
-  },
-  {
-    "semester": 1,
-    "tahun_kursus": 2,
-    "sesi": "2023/2024",
-    "status": "-",
-    "seksyen": 42,
-    "kod_subjek": "UHLB3132",
-    "kod_kursus": "SECJH",
-    "nama_subjek": "Professional Communication Skills"
-  },
-  {
-    "sesi": "2023/2024",
-    "tahun_kursus": 2,
-    "nama_subjek": "Human Computer Interaction",
-    "kod_kursus": "SECJH",
-    "status": "-",
-    "kod_subjek": "SECV2113",
-    "seksyen": 7,
-    "semester": 1
-  },
-  {
-    "semester": 1,
-    "tahun_kursus": 2,
-    "sesi": "2023/2024",
-    "status": "-",
-    "seksyen": 1,
-    "kod_subjek": "SECR2043",
-    "nama_subjek": "OPERATING SYSTEM",
-    "kod_kursus": "SECJH"
-  },
-  {
-    "tahun_kursus": 2,
-    "sesi": "2023/2024",
-    "kod_subjek": "SECJ3323",
-    "seksyen": 4,
-    "status": "-",
-    "kod_kursus": "SECJH",
-    "nama_subjek": "Software Design Architecture",
-    "semester": 1
-  },
-  {
-    "nama_subjek": "Internet Programming",
-    "kod_kursus": "SECJH",
-    "status": "-",
-    "seksyen": 3,
-    "kod_subjek": "SECJ3303",
-    "sesi": "2023/2024",
-    "tahun_kursus": 2,
-    "semester": 1
-  },
-  {
-    "sesi": "2023/2024",
-    "tahun_kursus": 2,
-    "nama_subjek": "DATA STRUCTURE AND ALGORITHM",
-    "kod_kursus": "SECJH",
-    "status": "-",
-    "kod_subjek": "SECJ2013",
-    "seksyen": 8,
-    "semester": 1
-  },
-  {
-    "semester": 2,
-    "status": "-",
-    "kod_subjek": "SECJ2154",
-    "seksyen": 8,
-    "kod_kursus": "SECJH",
-    "nama_subjek": "Object-Oriented Programming",
-    "tahun_kursus": 2,
-    "sesi": "2022/2023"
-  },
-  {
-    "semester": 2,
-    "tahun_kursus": 2,
-    "sesi": "2022/2023",
-    "seksyen": 14,
-    "kod_subjek": "SECJ2203",
-    "status": "-",
-    "kod_kursus": "SECJH",
-    "nama_subjek": "Software Engineering"
-  },
-  {
-    "semester": 2,
-    "kod_kursus": "SECJH",
-    "nama_subjek": "Requirements Engineering & Software Modelling",
-    "status": "-",
-    "seksyen": 2,
-    "kod_subjek": "SECJ2253",
-    "sesi": "2022/2023",
-    "tahun_kursus": 2
-  },
-  {
-    "semester": 2,
-    "tahun_kursus": 2,
-    "sesi": "2022/2023",
-    "kod_subjek": "SECR1033",
-    "seksyen": 9,
-    "status": "-",
-    "kod_kursus": "SECJH",
-    "nama_subjek": "Computer Organisation and Architecture"
-  },
-  {
-    "semester": 2,
-    "sesi": "2022/2023",
-    "tahun_kursus": 2,
-    "nama_subjek": "Web Programming",
-    "kod_kursus": "SECJH",
-    "status": "-",
-    "seksyen": 5,
-    "kod_subjek": "SECV2223"
-  },
-  {
-    "semester": 2,
-    "sesi": "2022/2023",
-    "tahun_kursus": 2,
-    "nama_subjek": "ACADEMIC COMMUNICATION SKILLS",
-    "kod_kursus": "SECJH",
-    "status": "-",
-    "seksyen": 43,
-    "kod_subjek": "UHLB2122"
-  },
-  {
-    "semester": 1,
-    "nama_subjek": "Malaysian Language for Communication 2",
-    "kod_kursus": "SECJH",
-    "kod_subjek": "UHLM1012",
-    "seksyen": 2,
-    "status": "-",
-    "sesi": "2022/2023",
-    "tahun_kursus": 1
-  },
-  {
-    "semester": 1,
-    "seksyen": 11,
-    "kod_subjek": "SECR1213",
-    "status": "-",
-    "nama_subjek": "NETWORK COMMUNICATIONS",
-    "kod_kursus": "SECJH",
-    "tahun_kursus": 1,
-    "sesi": "2022/2023"
-  },
-  {
-    "nama_subjek": "Teknologi & Sistem Maklumat",
-    "kod_kursus": "SECJH",
-    "kod_subjek": "SECP1513",
-    "seksyen": 8,
-    "status": "-",
-    "sesi": "2022/2023",
-    "tahun_kursus": 1,
-    "semester": 1
-  },
-  {
-    "kod_kursus": "SECJH",
-    "nama_subjek": "Programming Technique II",
-    "kod_subjek": "SECJ1023",
-    "seksyen": 1,
-    "status": "-",
-    "sesi": "2022/2023",
-    "tahun_kursus": 1,
-    "semester": 1
-  },
-  {
-    "semester": 1,
-    "sesi": "2022/2023",
-    "tahun_kursus": 1,
-    "kod_kursus": "SECJH",
-    "nama_subjek": "SYSTEM ANALYSIS AND DESIGN",
-    "status": "-",
-    "seksyen": 6,
-    "kod_subjek": "SECD2613"
-  },
-  {
-    "semester": 1,
-    "kod_kursus": "SECJH",
-    "nama_subjek": "DATABASE",
-    "kod_subjek": "SECD2523",
-    "seksyen": 6,
-    "status": "-",
-    "sesi": "2022/2023",
-    "tahun_kursus": 1
-  },
-  {
-    "seksyen": 18,
-    "kod_subjek": "UHLB1112",
-    "status": "-",
-    "kod_kursus": "SECJH",
-    "nama_subjek": "English Communication Skills",
-    "tahun_kursus": 1,
-    "sesi": "2021/2022",
-    "semester": 2
-  },
-  {
-    "tahun_kursus": 1,
-    "sesi": "2021/2022",
-    "kod_subjek": "UHIS1022",
-    "seksyen": 26,
-    "status": "-",
-    "nama_subjek": "Falsafah dan Isu Semasa",
-    "kod_kursus": "SECJH",
-    "semester": 2
-  },
-  {
-    "semester": 2,
-    "seksyen": 2,
-    "kod_subjek": "SECR1013",
-    "status": "-",
-    "kod_kursus": "SECJH",
-    "nama_subjek": "Logik Digital",
-    "tahun_kursus": 1,
-    "sesi": "2021/2022"
-  },
-  {
-    "semester": 2,
-    "nama_subjek": "Teknik Pengaturcaraan I",
-    "kod_kursus": "SECJH",
-    "kod_subjek": "SECJ1013",
-    "seksyen": 2,
-    "status": "-",
-    "sesi": "2021/2022",
-    "tahun_kursus": 1
-  },
-  {
-    "semester": 2,
-    "tahun_kursus": 1,
-    "sesi": "2021/2022",
-    "kod_subjek": "SECI1113",
-    "seksyen": 7,
-    "status": "-",
-    "kod_kursus": "SECJH",
-    "nama_subjek": "Computational Mathematics"
-  },
-  {
-    "semester": 2,
-    "tahun_kursus": 1,
-    "sesi": "2021/2022",
-    "seksyen": 2,
-    "kod_subjek": "SECI1013",
-    "status": "-",
-    "kod_kursus": "SECJH",
-    "nama_subjek": "Struktur Diskrit"
-  },
-  {
-    "tahun_kursus": 1,
-    "sesi": "2021/2022",
-    "status": "-",
-    "seksyen": 30,
-    "kod_subjek": "UHMT1012",
-    "kod_kursus": "SECJH",
-    "nama_subjek": "Graduate Success Attribute",
-    "semester": 2
-  }
-];
-
-
-        var currentSemesterIndex = 0;
-        var semesters = [];
+        // Initialize the SubjectManager
+        const subjectManager = new SubjectManager();
+        
+        let subjectsData = [];
+        let currentSemesterIndex = 0;
+        let semesters = [];
 
         // Process the subjects data to group by semester and session
         function processSubjectsData() {
@@ -382,14 +62,21 @@
             var subjectsTable = document.getElementById('subjectsTable').getElementsByTagName('tbody')[0];
             subjectsTable.innerHTML = '';
 
-            semesters[currentSemesterIndex].forEach(subject => {
+            if (semesters.length > 0) {
+                semesters[currentSemesterIndex].forEach(subject => {
+                    var row = subjectsTable.insertRow();
+                    row.insertCell(0).innerText = subject.kod_subjek;
+                    row.insertCell(1).innerText = subject.kod_kursus;
+                    row.insertCell(2).innerText = subject.nama_subjek;
+                    row.insertCell(3).innerText = subject.seksyen;
+                    row.insertCell(4).innerText = subject.status;
+                });
+            } else {
                 var row = subjectsTable.insertRow();
-                row.insertCell(0).innerText = subject.kod_subjek;
-                row.insertCell(1).innerText = subject.kod_kursus;
-                row.insertCell(2).innerText = subject.nama_subjek;
-                row.insertCell(3).innerText = subject.seksyen;
-                row.insertCell(4).innerText = subject.status;
-            });
+                var cell = row.insertCell(0);
+                cell.colSpan = 5;
+                cell.innerText = "No subjects available";
+            }
         }
 
         // Show previous semester subjects
@@ -408,16 +95,33 @@
             }
         }
 
+        // Fetch subjects data based on user type and display them
+        async function fetchAndDisplaySubjects() {
+            let appStorage = JSON.parse(sessionStorage.getItem("web_fc_utm_my_ttms"));
+            let userId = appStorage.user_auth.id;
+            if(isStudent()) userId = appStorage.user_auth.login_name
+
+            if (isStudent()) {
+                console.log("Fetching student subjects...");
+                subjectsData = await subjectManager.fetchStudentSubjects(userId);
+                console.log("Student subjects data:", subjectsData);
+            } else {
+                console.log("Fetching lecturer subjects...");
+                subjectsData = await subjectManager.fetchLecturerSubjects(userId);
+                console.log("Lecturer subjects data:", subjectsData);
+            }
+
+            if (subjectsData.length === 0) {
+                console.log("No subjects data fetched.");
+            }
+
+            processSubjectsData();
+            displaySubjects();
+        }
+
         // Initial setup
-        processSubjectsData();
-        displaySubjects();
-
-        // logout and back to login page if session invalid or session time out
         checkSession();
-
-        var appStorage = JSON.parse(sessionStorage.getItem("web_fc_utm_my_ttms"));
-        console.log(appStorage.user_auth.full_name);
-
+        fetchAndDisplaySubjects();
     </script>
 </body>
 </html>
